@@ -6,7 +6,7 @@ import { loginSuccessState } from "../atoms";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const STORAGE_KEY = "@toDos";
 
-const Detail = () => {
+const Login = () => {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [login, setLogin] = useRecoilState(loginSuccessState);
@@ -29,7 +29,6 @@ const Detail = () => {
     }
   };
 
-  console.log("Detail", login);
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -88,4 +87,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Detail;
+export default Login;

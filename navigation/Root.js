@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Detail from "../screens/Detail";
+import Login from "../screens/Login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Main from "../screens/Main";
 import { useRecoilState } from "recoil";
@@ -17,7 +17,7 @@ const Stack = () => {
       setLogin(user);
     })();
   }, []);
-  console.log("Root",login);
+  console.log("Root", login);
   return (
     <NativeStack.Navigator
       screenOptions={{
@@ -25,7 +25,7 @@ const Stack = () => {
         headerShown: false,
       }}
     >
-      <NativeStack.Screen name="Detail" component={login?.id ? Main : Detail} />
+      <NativeStack.Screen name="Login" component={login?.id ? Main : Login} />
     </NativeStack.Navigator>
   );
 };
