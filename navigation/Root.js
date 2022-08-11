@@ -1,32 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Login from "../screens/Login";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Main from "../screens/Main";
-import { useRecoilState } from "recoil";
-import { loginSuccessState } from "../atoms";
+import Stack from "./Stack";
 
-const NativeStack = createNativeStackNavigator();
-const STORAGE_KEY = "@toDos";
+const Nav = createNativeStackNavigator();
 
-const Stack = () => {
-  const [login, setLogin] = useRecoilState(loginSuccessState);
-  useEffect(() => {
-    (async () => {
-      const user = await AsyncStorage.getItem(STORAGE_KEY);
-      setLogin(user);
-    })();
-  }, []);
-  return (
-    <NativeStack.Navigator
-      screenOptions={{
-        headerBackTitleVisible: false,
-        headerShown: false,
-      }}
-    >
-      <NativeStack.Screen name="Login" component={login?.id ? Main : Login} />
-    </NativeStack.Navigator>
-  );
-};
+const Root = () => (
+  <Nav.Navigator
+    screenOptions={{
+      headerBackTitleVisible: false,
+      headerShown: false,
+    }}
+  >
+    <Nav.Screen name="Stack" component={Stack}></Nav.Screen>
+  </Nav.Navigator>
+);
 
-export default Stack;
+export default Root;
