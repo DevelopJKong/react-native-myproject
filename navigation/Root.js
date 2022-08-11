@@ -17,7 +17,6 @@ const Stack = () => {
       setLogin(user);
     })();
   }, []);
-  console.log("Root", login);
   return (
     <NativeStack.Navigator
       screenOptions={{
