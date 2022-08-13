@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput, Image, Button } from "react-native";
 import { useRecoilState } from "recoil";
 import { loginSuccessState } from "../atoms";
@@ -21,7 +21,7 @@ const Login = () => {
   const saveInfo = async (email, password) => {
     try {
       const { user } = await (
-        await fetch(`http://172.30.1.38:5000/api/users/postUsers`, {
+        await fetch(`http://172.30.1.43:5000/api/users/postUsers`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -62,7 +62,7 @@ const Login = () => {
       <Image
         style={styles.image}
         source={{
-          uri: "https://www.cafesmallhouse.com/img/cafe_logo_5.png",
+          uri: "http://172.30.1.43:19000/assets/cafe.png",
         }}
       />
       <Text style={styles.title}>Cafe Small House</Text>
@@ -94,6 +94,9 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginTop: 25,
     marginBottom: 10,
+    fontStyle: "italic",
+    fontWeight: "700",
+    color: "#FEC789",
   },
   input: {
     backgroundColor: "rgba(0,0,0,0.1)",

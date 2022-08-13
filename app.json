@@ -7,5 +7,10 @@
       "**/*"
     ]
   },
-  "name": "myproject"
+  "name": "myproject",
+  "splash": {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#ffffff"
+  }
 }
