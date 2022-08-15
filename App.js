@@ -7,7 +7,7 @@ import * as Updates from "expo-updates";
 import { Asset } from "expo-asset";
 import Constants from "expo-constants";
 import { Animated, Platform, View, StyleSheet } from "react-native";
-
+import { SafeAreaProvider } from "react-native-safe-area-context";
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
   console.log("error");
@@ -18,7 +18,9 @@ export default function App() {
     <RecoilRoot>
       <AnimatedAppLoader image={{ uri: "http://172.30.1.43:19000/assets/logo-unscreen.gif" }}>
         <NavigationContainer>
-          <Root />
+          <SafeAreaProvider>
+            <Root />
+          </SafeAreaProvider>
         </NavigationContainer>
       </AnimatedAppLoader>
     </RecoilRoot>

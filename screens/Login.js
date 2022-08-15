@@ -1,11 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, TextInput, Image, Button } from "react-native";
 import { useRecoilState } from "recoil";
 import { loginSuccessState } from "../atoms";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-const NativeStack = createNativeStackNavigator();
+import { useNavigation } from "@react-navigation/core";
+
 const STORAGE_KEY = "@toDos";
 
 const Login = () => {
@@ -13,6 +13,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [login, setLogin] = useRecoilState(loginSuccessState);
+  const navigation = useNavigation();
 
   useEffect(() => {
     loadInfo();
@@ -69,15 +70,21 @@ const Login = () => {
       <View>
         <Text>{error}</Text>
       </View>
-      <TextInput onChangeText={(payload) => setEmail(payload)} placeholder="Email" style={styles.input} />
-      <TextInput
-        onChangeText={(payload) => setPassword(payload)}
-        secureTextEntry={true}
-        placeholder="Password"
-        style={styles.input}
-      />
+      <View style={styles.shadowBox}>
+        <TextInput onChangeText={(payload) => setEmail(payload)} placeholder="Email" style={styles.input} />
+      </View>
+      <View style={styles.shadowBox}>
+        <TextInput
+          onChangeText={(payload) => setPassword(payload)}
+          secureTextEntry={true}
+          placeholder="Password"
+          style={styles.input}
+        />
+      </View>
       <View style={styles.buttonBox}>
-        <Button title="Login" onPress={() => saveInfo(email, password)} />
+        <Button title="Login" onPress={() => saveInfo(email, password)} style={styles.button} />
+        <View style={styles.buttonMargin} />
+        <Button title="Register" onPress={() => navigation.navigate("Stack", { screen: "Register" })} />
       </View>
     </View>
   );
@@ -98,12 +105,24 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#FEC789",
   },
-  input: {
-    backgroundColor: "rgba(0,0,0,0.1)",
+  shadowBox: {
+    width: "70%",
+    marginTop: 10,
+    backgroundColor: "#fff",
     borderRadius: 10,
-    marginTop: 20,
-    marginBottom: 10,
-    width: 270,
+    shadowColor: "rgba(0,0,0,0.7)",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+
+    elevation: 3,
+  },
+  input: {
+    borderRadius: 10,
+    width: "100%",
     paddingHorizontal: 20,
     height: 50,
     justifyContent: "center",
@@ -116,7 +135,10 @@ const styles = StyleSheet.create({
   },
   buttonBox: {
     marginTop: 20,
-    width: 270,
+    width: "70%",
+  },
+  buttonMargin: {
+    marginBottom: 10,
   },
 });
 
