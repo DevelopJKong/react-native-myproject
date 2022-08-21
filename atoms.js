@@ -14,3 +14,9 @@ export const logOutState = atom({
   key: "Logout",
   default: {},
 });
+
+export const emailCheckState = atom({
+  key: "EmailCheck",
+  default: ""
+});
+

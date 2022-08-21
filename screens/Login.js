@@ -5,8 +5,7 @@ import { useRecoilState } from "recoil";
 import { loginSuccessState } from "../atoms";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/core";
-
-const STORAGE_KEY = "@toDos";
+import { fetchLogin, STORAGE_KEY } from "../requestMethod";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,28 +20,50 @@ const Login = () => {
 
   const saveInfo = async (email, password) => {
     try {
-      const { user } = await (
-        await fetch(`http://172.30.1.43:5000/api/users/postUsers`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        })
-      ).json();
+      const data = await fetchLogin(email, password);
 
-      if (!user) {
-        throw new Error("noEmail");
+      if (data.status) {
+        const { status } = data;
+        switch (status) {
+          case "notExistEmail":
+            throw new Error("notExistEmail");
+          case "wrongPassword":
+            throw new Error("wrongPassword");
+          case "notVerified":
+            throw new Error("notVerified");
+          default:
+            throw new Error("extraServerError");
+        }
       }
 
-      if (user.email === email) {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify({ email, password }));
+      if (data.email === email) {
+        await AsyncStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            currentUser: data.email,
+            token: data.token,
+            isFetching: false,
+            error: false,
+            expire: Date.now(),
+          })
+        );
         loadInfo();
       }
     } catch (error) {
       const { message } = error;
 
       switch (message) {
-        case "noEmail":
-          setError("존재하는 계정이 없습니다");
+        case "notExistEmail":
+          setError("존재하는 계정이 없거나 이메일이 잘못 되었습니다");
+          break;
+        case "wrongPassword":
+          setError("비밀번호가 일치하지 않습니다");
+          break;
+        case "notVerified":
+          setError("이메일 인증이 필요합니다");
+          break;
+        default:
+          setError("잠시후에 다시 시도해주세요");
           break;
       }
     }
@@ -82,7 +103,7 @@ const Login = () => {
         />
       </View>
       <View style={styles.buttonBox}>
-        <Button title="Login" onPress={() => saveInfo(email, password)} style={styles.button} />
+        <Button title="Login" onPress={() => saveInfo(email, password)} />
         <View style={styles.buttonMargin} />
         <Button title="Register" onPress={() => navigation.navigate("Stack", { screen: "Register" })} />
       </View>

@@ -3,7 +3,9 @@ import React, { useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { loginSuccessState } from "../atoms";
 import { View, Text, Button, StyleSheet } from "react-native";
-const STORAGE_KEY = "@toDos";
+import { STORAGE_KEY } from "../requestMethod";
+
+
 const Main = () => {
   const [login, setLogin] = useRecoilState(loginSuccessState);
 

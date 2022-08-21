@@ -3,8 +3,13 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, Button, Image, TextInput, StatusBar, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
+import { fetchRegister } from "../requestMethod";
+import { useRecoilState } from "recoil";
+import { emailCheckState } from "../atoms";
 
 const Register = () => {
+  const [emailCheck,setEmailCheck] = useRecoilState(emailCheckState);
+
   const [country, setCountry] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,10 +21,59 @@ const Register = () => {
   const [recommendCode, setRecommendCode] = useState("");
 
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const navigation = useNavigation();
+
+  const onPressJoin = async () => {
+    try {
+      const data = await fetchRegister(
+        country,
+        email,
+        password,
+        confirmPass,
+        name,
+        lastName,
+        firstName,
+        birthNumber,
+        recommendCode
+      );
+
+      if (data.status) {
+        const { status } = data;
+        switch (status) {
+          case "diffPassword":
+            throw new Error("diffPassword");
+          case "notExistEmail":
+            throw new Error("notExistEmail");
+          default:
+            throw new Error("extraServerError");
+        }
+      }
+      setEmailCheck(data.user.email);
+      navigation.navigate("Stack", { screen: "EmailCheck" });
+    } catch (error) {
+      const { message } = error;
+      switch (message) {
+        case "diffPassword":
+          setPasswordError("비밀번호가 일치하지 않습니다");
+          setError("모든 값을 알맞게 입력해주세요");
+          break;
+        case "notExistEmail":
+          setEmailError("이미 존재하는 이메일입니다");
+          setError("모든 값을 알맞게 입력해주세요");
+          break;
+        default:
+          setError("모든 값을 알맞게 입력해주세요");
+          break;
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="auto" />
+
       <View style={styles.viewBox}>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollbox} bounces={false}>
           <Image
@@ -29,12 +83,10 @@ const Register = () => {
             }}
           />
           <Text style={styles.title}>Cafe Small House</Text>
-          <View>
-            <Text>{error}</Text>
-          </View>
+
           <View style={styles.shadowBox}>
             <RNPickerSelect
-              onValueChange={(value) => console.log(value)}
+              onValueChange={(payload) => setCountry(payload)}
               placeholder={{
                 label: "국가를 선택해주세요",
               }}
@@ -47,12 +99,29 @@ const Register = () => {
           </View>
           <Text style={styles.inputInfoBox}>이메일 :</Text>
           <View style={styles.shadowBox}>
-            <TextInput onChangeText={(payload) => setEmail(payload)} placeholder="Email" style={styles.input} />
+            <TextInput
+              onChangeText={(payload) => {
+                setEmail(payload);
+                setEmailError("");
+                setError("");
+              }}
+              placeholder="Email"
+              style={styles.input}
+            />
           </View>
+
+          <View>
+            <Text style={styles.inputValueError}>{emailError}</Text>
+          </View>
+
           <Text style={styles.inputInfoBox}>비밀번호 :</Text>
           <View style={styles.shadowBox}>
             <TextInput
-              onChangeText={(payload) => setPassword(payload)}
+              onChangeText={(payload) => {
+                setPassword(payload);
+                setPasswordError("");
+                setError("");
+              }}
               secureTextEntry={true}
               placeholder="Password"
               style={styles.input}
@@ -62,12 +131,21 @@ const Register = () => {
           <Text style={styles.inputInfoBox}>비밀번호 확인:</Text>
           <View style={styles.shadowBox}>
             <TextInput
-              onChangeText={(payload) => setConfirmPass(payload)}
+              onChangeText={(payload) => {
+                setConfirmPass(payload);
+                setPasswordError("");
+                setError("");
+              }}
               secureTextEntry={true}
               placeholder="Confirmation Password"
               style={styles.input}
             />
           </View>
+
+          <View>
+            <Text style={styles.inputValueError}>{passwordError}</Text>
+          </View>
+
           <Text style={styles.inputInfoBox}>이름 확인:</Text>
           <View style={styles.shadowBox}>
             <TextInput onChangeText={(payload) => setName(payload)} placeholder="Name" style={styles.input} />
@@ -103,10 +181,12 @@ const Register = () => {
             />
           </View>
           <View style={styles.buttonMargin} />
+          <View>
+            <Text style={styles.errorMessage}>{error}</Text>
+          </View>
           <View style={styles.button}>
-            <Button title="Home" color="tomato" onPress={() => navigation.navigate("Stack", { screen: "Login" })} />
             <View style={styles.buttonMargin} />
-            <Button title="Sign in" onPress={() => console.log("hello")} />
+            <Button title="Sign in" onPress={onPressJoin} />
           </View>
         </ScrollView>
       </View>
@@ -183,6 +263,13 @@ const styles = StyleSheet.create({
   button: {
     width: "85%",
     marginBottom: 50,
+  },
+  inputValueError: {
+    marginTop: 15,
+    color: "red",
+  },
+  errorMessage: {
+    color: "red",
   },
 });
 

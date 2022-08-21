@@ -6,9 +6,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Main from "../screens/Main";
 import { useRecoilState } from "recoil";
 import { loginSuccessState } from "../atoms";
+import { STORAGE_KEY } from "../requestMethod";
+import EmailCheck from "../screens/EmailCheck";
 
 const NativeStack = createNativeStackNavigator();
-const STORAGE_KEY = "@toDos";
 
 const Stack = () => {
   const [login, setLogin] = useRecoilState(loginSuccessState);
@@ -26,8 +27,9 @@ const Stack = () => {
       }}
       initialRouteName="Login"
     >
-      <NativeStack.Screen name="Login" component={login?.email ? Main : Login} />
+      <NativeStack.Screen name="Login" component={login?.currentUser ? Main : Login} />
       <NativeStack.Screen name="Register" component={Register} />
+      <NativeStack.Screen name="EmailCheck" component={EmailCheck} />
     </NativeStack.Navigator>
   );
 };
